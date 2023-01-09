@@ -11,7 +11,7 @@ router.post('/new',async (req,res)=>{
         user:req.body.user
     })
     try {
-        const dataToSave = await data.save();
+        const dataToSave = await project.save();
         res.status(200).json(dataToSave)
       } catch (error) {
           res.status(400).json({message: error.message})

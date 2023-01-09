@@ -18,6 +18,25 @@ router.post('/new',async (req,res)=>{
       }
 })
 
+//get all projects
+router.get('/all',async (req,res)=>{
+    try {
+        const project = await projectModel.find()
+        res.json(project)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+
+//get one project
+router.get('/:id',async (req,res)=>{
+    try {
+        const project = await projectModel.findById(req.params.id)
+        res.json(project)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
 
 
 module.exports = router;

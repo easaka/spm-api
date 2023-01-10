@@ -27,8 +27,37 @@ const showAll = async (req,res)=>{
     }
 }
 
+// show one
+const showOne = async (req,res)=>{
+    try {
+        const project = await projectModel.findById(req.params.id)
+        res.json(project)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
+
+// update one
+const update = async (req,res)=>{
+    try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const options = { new: true };
+
+        const result = await projectModel.findByIdAndUpdate(
+            id, updatedData, options
+        )
+
+        res.send(result)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
 
 module.exports = {
     create,
-    showAll
+    showAll,
+    showOne,
+    update
 }

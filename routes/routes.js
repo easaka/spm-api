@@ -11,14 +11,10 @@ router.post('/create',controller.create)
 router.get('/all',controller.showAll)
 
 //get one project
-router.get('/:id',async (req,res)=>{
-    try {
-        const project = await projectModel.findById(req.params.id)
-        res.json(project)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+router.get('/:id',controller.showOne)
+
+//update
+router.post('/update/:id',controller.update)
 
 
 module.exports = router;

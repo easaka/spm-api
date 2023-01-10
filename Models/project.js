@@ -12,8 +12,16 @@ const projectSchema = new mongoose.Schema({
     user:{
         type: String,
         required: true
+    },
+    createAt:{
+        type: Date,
+        default: Date.now
+    },
+    updatedAt:{
+        type: Date,
+        default: Date.now
     }
-    
+
 })
 
 

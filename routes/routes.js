@@ -2,6 +2,7 @@ const express = require('express')
 const projectModel = require('../Models/project')
 const router = express.Router()
 const controller = require('../controller/projectController')
+const userController = require('../controller/userController')
 const { tryCatch } = require('../utils/trycatch')
 
 
@@ -17,5 +18,7 @@ router.get('/:id',tryCatch(controller.showOne))
 //update
 router.post('/update/:id',tryCatch(controller.update))
 
+//userSignUp
+router.post('/register',tryCatch(userController.signUp))
 
 module.exports = router;

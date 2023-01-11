@@ -21,4 +21,7 @@ router.post('/update/:id',tryCatch(controller.update))
 //userSignUp
 router.post('/register',tryCatch(userController.signUp))
 
+//verifyEmail
+router.get('/verify-email/:token',tryCatch(userController.verifyEmail))
+
 module.exports = router;

@@ -44,7 +44,7 @@ const update = async (req,res)=>{
         )
 
         res.send(result)
-   
+
 }
 
 module.exports = {

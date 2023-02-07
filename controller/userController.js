@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const userModel = require('../Models/user')
 const sendVerificationEmail = require('../utils/sendEmail');
-const { error } = require('console');
+const jwtSecret = crypto.randomBytes(64).toString('hex');
 
 
 //Sign Up
@@ -25,24 +25,27 @@ const signUp = async (req,res)=>{
 }
 
 const verifyEmail = async (req,res)=>{
-    const token = req.params.token;
+   const token = req.query.token
 
-    // const decoded = jwt.verify(token)
-    const user = await userModel.find(userModel.verificationToken)
-    if (token===user.verificationToken) {
-        if (!user) {
-            throw new Error('User not found');
-        }
-        if (user.Verified) {
-            throw new Error('Email already verified');
-        }
-        user.Verified = true;
-        await user.save();
-        res.send('Email verified successfully');
-    }
-    else {
-        return error
-    }
+   if (!token){
+    return error
+   }
+   const decoded=jwt.verify(token,jwtSecret)
+   const user = await userModel.findById(decoded._id)
+
+   if(!user){
+    return error
+   }
+
+   if (user.verified === true){
+    return error
+   }
+
+   user.verified=true
+   await user.save()
+
+   res.send('Email verified')
+
 
 }
 

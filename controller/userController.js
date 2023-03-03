@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const userModel = require('../Models/user')
 const sendVerificationEmail = require('../utils/sendEmail');
+const user = require('../Models/user');
 const jwtSecret = crypto.randomBytes(64).toString('hex');
 
 
@@ -25,27 +26,23 @@ const signUp = async (req,res)=>{
 }
 
 const verifyEmail = async (req,res)=>{
-   const token = req.query.token
 
-   if (!token){
-    return error
-   }
-   const decoded=jwt.verify(token,jwtSecret)
-   const user = await userModel.findById(decoded._id)
+
+   const user = await userModel.findOne({token:user.verificationToken})
+
+   const token = user.verificationToken
 
    if(!user){
-    return error
+    return res.status(400).send({message:"Invalid Link"})
    }
 
-   if (user.verified === true){
-    return error
+   if(!token){
+    return res.status(400).send({message:"Invalid link"})
    }
 
-   user.verified=true
-   await user.save()
+   await userModel.updateOne(token,verified)
 
-   res.send('Email verified')
-
+   res.status(200).send({message:"Verified"})
 
 }
 

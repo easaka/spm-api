@@ -11,9 +11,7 @@ const userSchema = new mongoose.Schema({
     verified: {
         type: Boolean,
         default: false
-    },
-    verificationToken: String,
-    verificationTokenExpiry: Date
+    }
 })
 
 module.exports = mongoose.model('User', userSchema)

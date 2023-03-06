@@ -2,8 +2,10 @@ const express = require('express')
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const userModel = require('../Models/user')
+const token = require('../Models/token')
 const sendVerificationEmail = require('../utils/sendEmail');
-const user = require('../Models/user');
+const User = require('../Models/user');
+const Token = require('../Models/token');
 const jwtSecret = crypto.randomBytes(64).toString('hex');
 
 
@@ -13,37 +15,35 @@ const signUp = async (req,res)=>{
         if (!name || !email || !password) {
             return res.status(400).send('All fields are required')
         }
-        const user = new userModel({ name, email, password });
+        const user = new User({ name, email, password });
         await user.save();
 
 
-        const token = crypto.randomBytes(16).toString('hex');
-        user.verificationToken = token;
-        user.verificationTokenExpiry = Date.now() + 3600000;
-        await user.save();
-        sendVerificationEmail.sendVerificationEmail(user.email, token);
+       const token = await new Token({
+        userID:user._id,
+        token: crypto.randomBytes(32).toString('hex')
+       }).save()
+       console.log(token.token);
+        sendVerificationEmail.sendVerificationEmail(user.email, token.token,user._id);
         res.send('A verification email has been sent to your email address.');
 }
 
 const verifyEmail = async (req,res)=>{
 
+    const user = await User.findOne({_id:req.params.id})
+    if(!user)return res.status(400).send({message: "Invalid Link"})
 
-   const user = await userModel.findOne({token:user.verificationToken})
+    const token = await Token.findOne({
+        userID: user._id,
+        token: req.params.token
+    })
+    // console.log(token.token)
+    if(!token)return res.status(400).send({message: "invalid Link"})
 
-   const token = user.verificationToken
+    await user.updateOne({_id:user._id, verified:true})
+    await token.remove()
 
-   if(!user){
-    return res.status(400).send({message:"Invalid Link"})
-   }
-
-   if(!token){
-    return res.status(400).send({message:"Invalid link"})
-   }
-
-   await userModel.updateOne(token,verified)
-
-   res.status(200).send({message:"Verified"})
-
+    res.status(200).send({message: "Email verified"})
 }
 
 module.exports = {

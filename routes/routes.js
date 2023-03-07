@@ -1,5 +1,5 @@
 const express = require('express')
-const projectModel = require('../Models/project')
+// const projectModel = require('../Models/project')
 const router = express.Router()
 const controller = require('../controller/projectController')
 const userController = require('../controller/userController')
@@ -23,5 +23,8 @@ router.post('/register',tryCatch(userController.signUp))
 
 //verifyEmail
 router.get('/:id/verify/:token',tryCatch(userController.verifyEmail))
+
+// login
+router.post("/login",tryCatch(userController.login))
 
 module.exports = router;

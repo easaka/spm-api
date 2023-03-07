@@ -6,6 +6,7 @@ const token = require('../Models/token')
 const sendVerificationEmail = require('../utils/sendEmail');
 const User = require('../Models/user');
 const Token = require('../Models/token');
+const bcrypt = require("bcrypt")
 const jwtSecret = crypto.randomBytes(64).toString('hex');
 
 
@@ -23,11 +24,13 @@ const signUp = async (req,res)=>{
         userID:user._id,
         token: crypto.randomBytes(32).toString('hex')
        }).save()
-       console.log(token.token);
+    //    console.log(token.token);
         sendVerificationEmail.sendVerificationEmail(user.email, token.token,user._id);
         res.send('A verification email has been sent to your email address.');
 }
 
+
+// verify Email
 const verifyEmail = async (req,res)=>{
 
     const user = await User.findOne({_id:req.params.id})
@@ -46,7 +49,35 @@ const verifyEmail = async (req,res)=>{
     res.status(200).send({message: "Email verified"})
 }
 
+// login
+
+const login = async (req,res)=>{
+    const {email,password} = req.body
+
+    const user = await User.findOne({email})
+
+    if (!user)return res.status(401).send({message: "Invalid Email or Password"})
+
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if (!isMatch)return res.status(401).send({message:"Invalid Email or Password"})
+
+    if(!user.verified){
+        let token = await Token.findOne({userID: user.id})
+        if (!token){
+            token = await new Token({
+                userID:user._id,
+                token: crypto.randomBytes(32).toString('hex')
+               }).save()
+        }
+        sendVerificationEmail.sendVerificationEmail(user.email, token.token,user._id);
+        res.send('A verification email has been sent to your email address.');
+    }
+    res.status(200).send({message:"Login successful"})
+}
+
 module.exports = {
     signUp,
-    verifyEmail
+    verifyEmail,
+    login
 }

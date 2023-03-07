@@ -1,14 +1,20 @@
 const express = require('express')
 const projectModel = require('../Models/project')
+const User = require('../Models/user')
 
 // create a project
 
 const create = async (req,res)=>{
+
+    const user = await User.findOne({_id:req.params.id})
+    if(!user)return res.status(401).send({message: "Unauthorized access"})
     const project = new projectModel({
         project:req.body.project,
         task:req.body.task,
-        user:req.body.user
+        user:user._id
     })
+ console.log(project.user);
+
 
         const dataToSave = await project.save();
         res.status(200).json(dataToSave)

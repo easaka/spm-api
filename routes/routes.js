@@ -7,7 +7,7 @@ const { tryCatch } = require('../utils/trycatch')
 
 
 //create project
-router.post('/create',tryCatch(controller.create))
+router.post('/:id/create',tryCatch(controller.create))
 
 //get all projects
 router.get('/all',tryCatch(controller.showAll))

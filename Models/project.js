@@ -10,7 +10,11 @@ const projectSchema = new mongoose.Schema({
         required: true
     },
     user:{
-        type: String 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "user",
+        unique: true
+
     },
     createAt:{
         type: Date,
